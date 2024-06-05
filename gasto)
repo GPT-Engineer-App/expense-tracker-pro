@@ -1,0 +1,46 @@
+<?php
+session_start();
+if (!isset($_SESSION['user'])) {
+    header('Location: index.php');
+    exit();
+}
+include('db.php');
+include('functions.php');
+
+if (isset($_POST['add_gasto'])) {
+    $descricao = $_POST['descricao'];
+    $valor = $_POST['valor'];
+    $data = $_POST['data'];
+    $categoria = $_POST['categoria'];
+    $conta_id = $_SESSION['user']['id'];
+    $sql = "INSERT INTO transacao (descricao, valor, data, tipo, conta_id, categoria_nome) VALUES ('$descricao', '$valor', '$data', 'Débito', '$conta_id', '$categoria')";
+    if ($conn->query($sql) === TRUE) {
+        header('Location: gastos.php');
+    } else {
+        $error = "Erro ao adicionar gasto!";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Gasto</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Adicionar Gasto</h1>
+        <?php if (isset($error)) echo "<p class='error'>$error</p>"; ?>
+        <form method="POST">
+            <input type="text" name="descricao" placeholder="Descrição" required>
+            <input type="number" name="valor" placeholder="Valor" required>
+            <input type="date" name="data" required>
+            <input type="text" name="categoria" placeholder="Categoria" required>
+            <button type="submit" name="add_gasto">Adicionar</button>
+        </form>
+    </div>
+</body>
+</html>
